@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
 //Create new rental
 router.post('/', async (req, res) => {
     const {error} = validateRentals(req.body);
-    if(error) return res.status(400).send('Bad request');
+    if(error) return res.status(400).send(error.details[0].message);
 
     const customer = Customer.findId(req.body.customerId);
     if(!customer) return res.status(400).send('Invalid customer !')
@@ -32,6 +32,8 @@ router.post('/', async (req, res) => {
         }
     });
 
-    rental = await rental.save();
+    await rental.save();
     res.send(rental);
 });
+
+module.exports = router

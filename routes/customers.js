@@ -22,7 +22,7 @@ router.post('/', async (req, res) => {
     });
 
     const {error} = schema.validate(req.body);
-    if (error) return res.status(400).send('Bad request');
+    if (error) return res.status(400).send(error.details[0].message);
 
     if (Customer.find({ name: req.body.name })) return res.status(409).send('Resource already exists');
 
@@ -31,7 +31,7 @@ router.post('/', async (req, res) => {
         isGold: req.body.isGold,
         phone: req.body.phone,
     });
-    customer = await customer.save();
+    await customer.save();
     res.send(customer);    
 });
 

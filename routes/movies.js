@@ -1,4 +1,3 @@
-const Joi = require('joi');
 const router = require('express').Router()
 const {Movie, moviesValidate} = require('../models/movies.js');
 const { Genre } = require('../models/genres.js');
@@ -18,7 +17,7 @@ router.get('/:id', async (req, res) => {
 //POST
 router.post('/', async (req, res) => {
     const {error} = moviesValidate(req.body);
-    if (error) return res.status(400).send('Bad request');
+    if (error) return res.status(400).send(error.details[0].message);
 
     const genre = Genre.findById(req.body.genreId);
     if (!genre) return res.status(409).send('Resource already exists');
@@ -32,7 +31,7 @@ router.post('/', async (req, res) => {
         numberInStock: req.body.numberInStock,
         dailyRentalRate: req.body.dailyRentalRate,
     });
-    movie = await movie.save();
+    await movie.save();
     res.send(movie);    
 });
 
