@@ -1,5 +1,3 @@
-const jwt = require('jsonwebtoken');
-const config = require('config');
 const Joi = require('joi');
 const { joiPasswordExtendCore } = require('joi-password');
 const joiPassword = Joi.extend(joiPasswordExtendCore);
@@ -16,7 +14,7 @@ router.post('/', async (req, res) => {
     if (!user) return res.status(400).send('Invalid email or password');
 
     bcrypt.compare(req.body.password, user.password);
-    const token = jwt.sign({ _id: user._id }, config.get('localjwtkey'))
+    const token = user.generateAuthToken();
     res.send(token);    
 });
 

@@ -3,6 +3,7 @@ const Joi = require('joi');
 const express = require('express');
 const router = express.Router();
 const Customer = require('../models/customers.js')
+const auth = require('../middleware/auth');
 
 // GET all customers
 router.get('/', async (req, res) => {
@@ -17,7 +18,7 @@ router.get('/:id', async (req, res) => {
 });
 
 //POST
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     const schema = Joi.object({
         name: Joi.string().min(3).required()
     });

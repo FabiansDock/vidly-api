@@ -1,12 +1,11 @@
-const config = require('config');
-const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
 const router = require('express').Router()
 const {User, validateUser} = require('../models/users.js');
+const auth = require('../middleware/auth');
 
 //POST
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     const {error} = validateUser(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
@@ -18,7 +17,7 @@ router.post('/', async (req, res) => {
     user.password = await bcrypt.hash(user.password, await bcrypt.genSalt())
     await user.save();
 
-    const token = jwt.sign({ _id: user._id }, config.get('localjwtkey'));
+    const token = user.generateAuthToken();
     res.header('x-auth-token', token).send(_.pick(req.body, ['name', 'email']));    
 });
 

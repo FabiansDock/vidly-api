@@ -3,7 +3,7 @@ const Joi = require('joi');
 const express = require('express');
 const router = express.Router();
 const {Genre} = require('../models/genres.js')
-
+const auth = require('../middleware/auth');
 //GET all genres
 router.get('/', async (req, res) => {
     const genres = await Genre.find();
@@ -17,7 +17,7 @@ router.get('/:id', async (req, res) => {
 });
 
 //POST
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     const schema = Joi.object({
         name: Joi.string().min(3).required()
     });

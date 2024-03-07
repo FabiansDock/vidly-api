@@ -4,6 +4,7 @@ const router = express.Router();
 const {Rental, validateRentals} = require('../models/rentals');
 const Customer = require('../models/customers');
 const Movie = require('../models/movies');
+const auth = require('../middleware/auth');
 
 //Get all rentals
 router.get('/', async (req, res) => {
@@ -12,7 +13,7 @@ router.get('/', async (req, res) => {
 });
 
 //Create new rental
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     const {error} = validateRentals(req.body);
     if(error) return res.status(400).send(error.details[0].message);
 

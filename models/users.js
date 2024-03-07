@@ -1,9 +1,11 @@
 const Joi = require('joi');
+const jwt = require('jsonwebtoken');
+const config = require('config');
 const { joiPasswordExtendCore } = require('joi-password');
 const joiPassword = Joi.extend(joiPasswordExtendCore);
 const mongoose = require('mongoose'); 
 
-const usersSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
     name: {
         type: String,
         minlength: 5, 
@@ -25,7 +27,12 @@ const usersSchema = new mongoose.Schema({
     },
 });
 
-const User = mongoose.model('User', usersSchema);
+const User = mongoose.model('User', userSchema);
+
+userSchema.methods.generateAuthToken = function () {
+    const token = jwt.sign({ _id: this._id }, config.get('localjwtkey'));
+    return token;
+}
 
 function validateUser(user) {
     const schema = {
@@ -46,6 +53,7 @@ function validateUser(user) {
     return Joi.object(schema).validate(user)
 }
 
+
 exports.User = User
-exports.usersSchema = usersSchema
+exports.userSchema = userSchema
 exports.validateUser = validateUser

@@ -2,6 +2,7 @@ const _ = require('lodash');
 const router = require('express').Router()
 const {Movie, moviesValidate} = require('../models/movies.js');
 const { Genre } = require('../models/genres.js');
+const auth = require('../middleware/auth');
 
 //GET all genres
 router.get('/', async ( req , res) => {
@@ -16,7 +17,7 @@ router.get('/:id', async (req, res) => {
 });
 
 //POST
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     const {error} = moviesValidate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
