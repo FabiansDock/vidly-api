@@ -1,35 +1,27 @@
+const jwt = require('jsonwebtoken');
+const config = require('config');
 const Joi = require('joi');
 const { joiPasswordExtendCore } = require('joi-password');
 const joiPassword = Joi.extend(joiPasswordExtendCore);
-const mongoose = require('mongoose'); 
+const bcrypt = require('bcrypt');
+const router = require('express').Router()
+const {User} = require('../models/users.js');
 
-const usersSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        minlength: 5, 
-        maxlength: 30,
-        required: true,
-    },
-    email: {
-        type: String,
-        required: true,
-        minlength: 5,
-        maxlength: 50,
-        unique: true,
-    },
-    password: {
-        type: String,
-        required: true,
-        minlength: 5,
-        maxlength: 1024,
-    },
+//POST
+router.post('/', async (req, res) => {
+    const {error} = validateUser(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
+
+    let user = User.findOne({ email: req.body.email});
+    if (!user) return res.status(400).send('Invalid email or password');
+
+    bcrypt.compare(req.body.password, user.password);
+    const token = jwt.sign({ _id: user._id }, config.get('localjwtkey'))
+    res.send(token);    
 });
-
-const User = mongoose.model('User', usersSchema);
 
 function validateUser(user) {
     const schema = {
-        name: Joi.string().min(6).max(30).required(),
         email: Joi.string().min(6).max(30).required(),
         password: joiPassword.string()
                                 .minOfSpecialCharacters(2)
@@ -46,6 +38,4 @@ function validateUser(user) {
     return Joi.object(schema).validate(user)
 }
 
-exports.User = User
-exports.usersSchema = usersSchema
-exports.validateUser = validateUser
+module.exports = router;

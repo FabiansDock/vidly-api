@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const express = require('express');
 const router = express.Router();
 const {Rental, validateRentals} = require('../models/rentals');
@@ -19,17 +20,10 @@ router.post('/', async (req, res) => {
     if(!customer) return res.status(400).send('Invalid customer !')
     const movie = Movie.findId(req.body.movieId);
     if(!movie) return res.status(400).send('Invalid movie !')
+    
     let rental = new Rental({
-        customer: {
-            _id: customer._id,
-            name: customer.name,
-            phone: customer.phone,
-        },
-        movie: {
-            _id: movie._id,
-            title: movie.title,
-            rentalFee: movie.rentalFee,
-        }
+        customer: _.pick(customer, ['_id', 'name', 'phone']),
+        movie: _.pick(movie, ['_id', 'title', 'rentalFee']),
     });
 
     await rental.save();

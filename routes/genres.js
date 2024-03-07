@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const Joi = require('joi');
 const express = require('express');
 const router = express.Router();
@@ -26,9 +27,7 @@ router.post('/', async (req, res) => {
 
     if (Genre.find({ name: req.body.name })) return res.status(409).send('Resource already exists');
 
-    let genre = new Genre({
-        name: req.body.name,
-    });
+    let genre = new Genre(req.body, ['name']);
     await genre.save();
     res.send(genre);    
 });

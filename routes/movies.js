@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const router = require('express').Router()
 const {Movie, moviesValidate} = require('../models/movies.js');
 const { Genre } = require('../models/genres.js');
@@ -22,15 +23,8 @@ router.post('/', async (req, res) => {
     const genre = Genre.findById(req.body.genreId);
     if (!genre) return res.status(409).send('Resource already exists');
 
-    let movie = new Movie({
-        title: req.body.title,
-        genre: {
-            _id: genre._id,
-            name: genre.name,
-        },
-        numberInStock: req.body.numberInStock,
-        dailyRentalRate: req.body.dailyRentalRate,
-    });
+    
+    let movie = new Movie(_.pick(req.body, ['title', 'genre', 'numberInStock', 'dailyRentalRate']));
     await movie.save();
     res.send(movie);    
 });

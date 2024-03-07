@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const Joi = require('joi');
 const express = require('express');
 const router = express.Router();
@@ -26,11 +27,8 @@ router.post('/', async (req, res) => {
 
     if (Customer.find({ name: req.body.name })) return res.status(409).send('Resource already exists');
 
-    let customer = new Customer({
-        name: req.body.name,
-        isGold: req.body.isGold,
-        phone: req.body.phone,
-    });
+    let customer = new Customer(_.pick(req.body, ['name', 'isGold', 'phone']));
+    
     await customer.save();
     res.send(customer);    
 });
