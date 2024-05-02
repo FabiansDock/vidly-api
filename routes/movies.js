@@ -31,7 +31,7 @@ router.post('/', auth, async (req, res) => {
 });
 
 //PATCH
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', auth, async (req, res) => {
     const schema = Joi.object({
         title: Joi.string().min(3).required()
     });
@@ -46,7 +46,7 @@ router.patch('/:id', async (req, res) => {
 });
 
 // DELETE
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', [auth, admin], async (req, res) => {
     const movie = await Movie.findByIdandRemove(req.params.id);
     if (!movie) return res.status(404).send('Not found');
     res.send(movie);

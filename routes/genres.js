@@ -4,6 +4,8 @@ const express = require('express');
 const router = express.Router();
 const {Genre} = require('../models/genres.js')
 const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
+
 //GET all genres
 router.get('/', async (req, res) => {
     const genres = await Genre.find();
@@ -33,7 +35,7 @@ router.post('/', auth, async (req, res) => {
 });
 
 //PATCH
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', auth, async (req, res) => {
     const schema = Joi.object({
         name: Joi.string().min(3).required()
     });
@@ -48,7 +50,7 @@ router.patch('/:id', async (req, res) => {
 });
 
 // DELETE
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', [auth, admin], async (req, res) => {
 
     const genre = await Genre.findByIdandRemove(req.params.id);
     if (!genre) return res.status(404).send('Not found');
