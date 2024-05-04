@@ -11,5 +11,14 @@ const genresSchema = new mongoose.Schema({
 
 const Genre = mongoose.model('Genre', genresSchema);
 
-exports.Genre = Genre
-exports.genresSchema = genresSchema
+const validateGenres = (genre) => {
+    const schema = Joi.object({
+        name: Joi.string().min(3).required()
+    });
+
+    return Joi.object(schema).validate(genre);
+}
+
+exports.Genre = Genre;
+exports.genresSchema = genresSchema;
+exports.validateGenres = validateGenres;

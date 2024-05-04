@@ -3,13 +3,11 @@ const { joiPasswordExtendCore } = require('joi-password');
 const joiPassword = Joi.extend(joiPasswordExtendCore);
 const bcrypt = require('bcrypt');
 const router = require('express').Router()
-const {User} = require('../models/users.js');
+const {User, validateUser} = require('../models/users.js');
+const validate = require('../middleware/validate.js');
 
 //POST
-router.post('/', async (req, res) => {
-    const {error} = validateUser(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
-
+router.post('/', validate(validateUser), async (req, res) => {
     let user = User.findOne({ email: req.body.email});
     if (!user) return res.status(400).send('Invalid email or password');
 
@@ -17,23 +15,5 @@ router.post('/', async (req, res) => {
     const token = user.generateAuthToken();
     res.send(token);    
 });
-
-function validateUser(user) {
-    const schema = {
-        email: Joi.string().min(6).max(30).required(),
-        password: joiPassword.string()
-                                .minOfSpecialCharacters(2)
-                                .minOfLowercase(2)
-                                .minOfUppercase(2)
-                                .minOfNumeric(2)
-                                .noWhiteSpaces()
-                                .onlyLatinCharacters()
-                                .doesNotInclude(['password'])
-                                .required()
-                                ,
-    }
-
-    return Joi.object(schema).validate(user)
-}
 
 module.exports = router;

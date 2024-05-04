@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const router = require('express').Router()
 const {User, validateUser} = require('../models/users');
 const auth = require('../middleware/auth');
+const validate = require('../middleware/validate');
 
 router.get('/me', auth, async (req, res) => {
     const user = await User.findById(req.user._id).select('-password');
@@ -10,10 +11,7 @@ router.get('/me', auth, async (req, res) => {
 });
 
 //POST
-router.post('/', async (req, res) => {
-    const {error} = validateUser(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
-
+router.post('/', validate(validateUser),async (req, res) => {
     let user = User.find({ email: req.body.email})[0];
     if (user) return res.status(400).send('User already exists');
 

@@ -2,9 +2,10 @@ const _ = require('lodash');
 const Joi = require('joi');
 const express = require('express');
 const router = express.Router();
-const Customer = require('../models/customers.js')
+const { Customer, validateCustomers } = require('../models/customers.js')
 const auth = require('../middleware/auth');
 const invalidObjectId = require('../middleware/invalidObjectId');
+const validate = require('../middleware/validate.js');
 
 // GET all customers
 router.get('/', async (req, res) => {
@@ -19,14 +20,7 @@ router.get('/:id', invalidObjectId, async (req, res) => {
 });
 
 //POST
-router.post('/', auth, async (req, res) => {
-    const schema = Joi.object({
-        name: Joi.string().min(3).required()
-    });
-
-    const {error} = schema.validate(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
-
+router.post('/', [auth, validate(validateCustomers)], async (req, res) => {
     if (Customer.find({ name: req.body.name })) return res.status(409).send('Resource already exists');
 
     let customer = new Customer(_.pick(req.body, ['name', 'isGold', 'phone']));
@@ -36,14 +30,7 @@ router.post('/', auth, async (req, res) => {
 });
 
 //PATCH
-router.patch('/:id', invalidObjectId, async (req, res) => {
-    const schema = Joi.object({
-        name: Joi.string().min(3).required()
-    });
-
-    const {error} = schema.validate(req.body);
-    if (error) return res.status(400).send('Bad request');
-
+router.patch('/:id', [invalidObjectId, validate(validateCustomers)], async (req, res) => {
     const customer = Customer.findByIdAndUpdate(req.params.id, { name:req.body.name }, {new: true});
     if (!customer) return res.status(404).send('Not found');
 

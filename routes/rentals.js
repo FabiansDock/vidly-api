@@ -2,9 +2,10 @@ const _ = require('lodash');
 const express = require('express');
 const router = express.Router();
 const {Rental, validateRentals} = require('../models/rentals');
-const Customer = require('../models/customers');
-const Movie = require('../models/movies');
+const { Customer } = require('../models/customers');
+const { Movie } = require('../models/movies');
 const auth = require('../middleware/auth');
+const validate = require('../middleware/validate');
 
 //Get all rentals
 router.get('/', async (req, res) => {
@@ -13,10 +14,7 @@ router.get('/', async (req, res) => {
 });
 
 //Create new rental
-router.post('/', auth, async (req, res) => {
-    const {error} = validateRentals(req.body);
-    if(error) return res.status(400).send(error.details[0].message);
-
+router.post('/', [auth, validate(validateRentals)], async (req, res) => {
     const customer = Customer.findById(req.body.customerId);
     if(!customer) return res.status(400).send('Invalid customer !')
     const movie = Movie.findById(req.body.movieId);

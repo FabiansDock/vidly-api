@@ -1,15 +1,13 @@
 const express = require('express');
 const moment = require('moment');
 const auth = require('../middleware/auth');
+const validate = require('../middleware/validate');
 const { Rental } = require('../models/rentals');
 const { Movie } = require('../models/movies');
 const { validateRentals, Rental } = require('../models/rentals');
 const router = express.Router()
 
-router.post('/', auth, async (req, res) => {
-    const { error } = validateRentals(req.body);
-    if(!error) return res.status(400).send(error.details[0].message);
-
+router.post('/', [auth, validate(validateRentals)], async (req, res) => {
     const rental = await Rental.find({ 'customer._id': req.body.customerId, 
                                         'movie._id': req.body.movieId });
     if(!rental) return res.status(404).send("Rental does not exist!");
