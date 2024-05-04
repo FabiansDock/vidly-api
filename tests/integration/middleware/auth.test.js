@@ -1,5 +1,5 @@
 const request = require('supertest');
-const server = require('../../index');
+const server = require('../../../index');
 const {User} = require('../models/users');
 
 describe('auth middleware', () => {
