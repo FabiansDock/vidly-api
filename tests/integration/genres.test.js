@@ -5,13 +5,13 @@ const { User } = require('../models/users');
 
 let server;
 
-describe('api/genres', () => {
+describe('/api/genres', () => {
     beforeEach(async () => { 
         server = require('../../index'); 
     });
-    afterEach(() => { 
+    afterEach(async () => { 
+        await Genre.remove({}); 
         server.close();  
-        Genre.remove({}); 
     });
 
     describe('GET /', async () => {
@@ -50,8 +50,8 @@ describe('api/genres', () => {
         let token;
         let name;
 
-        const exec = async function() {
-            await request(server)
+        const exec = () => {
+            return request(server)
                     .set('x-auth-token', token)
                     .post('/api/genres')
                     .send({ name });
