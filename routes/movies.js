@@ -3,6 +3,7 @@ const router = require('express').Router()
 const {Movie, moviesValidate} = require('../models/movies.js');
 const { Genre } = require('../models/genres.js');
 const auth = require('../middleware/auth');
+const invalidObjectId = require('../middleware/invalidObjectId');
 
 //GET all genres
 router.get('/', async ( req , res) => {
@@ -11,7 +12,7 @@ router.get('/', async ( req , res) => {
 });
 
 //GET a single genre
-router.get('/:id', async (req, res) => {
+router.get('/:id', invalidObjectId, async (req, res) => {
     const movie = await Movie.findById(req.params.id);
     res.send(movie);
 });
@@ -31,7 +32,7 @@ router.post('/', auth, async (req, res) => {
 });
 
 //PATCH
-router.patch('/:id', auth, async (req, res) => {
+router.patch('/:id', [auth, invalidObjectId], async (req, res) => {
     const schema = Joi.object({
         title: Joi.string().min(3).required()
     });
@@ -46,7 +47,7 @@ router.patch('/:id', auth, async (req, res) => {
 });
 
 // DELETE
-router.delete('/:id', [auth, admin], async (req, res) => {
+router.delete('/:id', [auth, admin, invalidObjectId], async (req, res) => {
     const movie = await Movie.findByIdandRemove(req.params.id);
     if (!movie) return res.status(404).send('Not found');
     res.send(movie);

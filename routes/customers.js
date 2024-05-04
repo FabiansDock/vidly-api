@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 const Customer = require('../models/customers.js')
 const auth = require('../middleware/auth');
+const invalidObjectId = require('../middleware/invalidObjectId');
 
 // GET all customers
 router.get('/', async (req, res) => {
@@ -12,7 +13,7 @@ router.get('/', async (req, res) => {
 });
 
 //GET a single customer
-router.get('/:id', async (req, res) => {
+router.get('/:id', invalidObjectId, async (req, res) => {
     const customer = await Customer.findById(req.params.id);
     res.send(customer);
 });
@@ -35,7 +36,7 @@ router.post('/', auth, async (req, res) => {
 });
 
 //PATCH
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', invalidObjectId, async (req, res) => {
     const schema = Joi.object({
         name: Joi.string().min(3).required()
     });
@@ -50,7 +51,7 @@ router.patch('/:id', async (req, res) => {
 });
 
 // DELETE
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', invalidObjectId, async (req, res) => {
 
     const customer = await Customer.findByIdandRemove(req.params.id);
     if (!customer) return res.status(404).send('Not found');
