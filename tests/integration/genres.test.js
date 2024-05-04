@@ -3,6 +3,7 @@ const { Genre } = require('../../models/genres');
 const mongoose = require('mongoose');
 const { User } = require('../models/users');
 
+
 let server;
 
 describe('/api/genres', () => {
@@ -11,7 +12,7 @@ describe('/api/genres', () => {
     });
     afterEach(async () => { 
         await Genre.remove({}); 
-        server.close();  
+        await server.close();  
     });
 
     describe('GET /', async () => {
@@ -30,8 +31,14 @@ describe('/api/genres', () => {
 
     describe('GET /:id', () => {
 
-        it("throws an error if genre id doesn't exist", () => {
+        it("returns 404 if genre id doesn't exist", () => {
             const res = request(server).get('api/genres/1');
+            expect(res.status).toBe(404);
+        });
+        
+        it("should return 404 if no genre with given id exists", () => {
+            const id = mongoose.Types.ObjectId();
+            const res = request(server).get('api/genres/'+id);
             expect(res.status).toBe(404);
         });
 

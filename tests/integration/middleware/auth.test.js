@@ -1,17 +1,19 @@
 const request = require('supertest');
-const server = require('../../../index');
 const {User} = require('../models/users');
+
+let server;
 
 describe('auth middleware', () => {
     let token;
 
     beforeEach(() => {
         token = new User().generateAuthToken();
+        server = require('../../../index');
     });
 
     afterEach(async () => {
         await User.remove({});
-        server.close();
+        await server.close();
     });
 
     const exec = () => {

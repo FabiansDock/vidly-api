@@ -17,9 +17,9 @@ router.post('/', auth, async (req, res) => {
     const {error} = validateRentals(req.body);
     if(error) return res.status(400).send(error.details[0].message);
 
-    const customer = Customer.findId(req.body.customerId);
+    const customer = Customer.findById(req.body.customerId);
     if(!customer) return res.status(400).send('Invalid customer !')
-    const movie = Movie.findId(req.body.movieId);
+    const movie = Movie.findById(req.body.movieId);
     if(!movie) return res.status(400).send('Invalid movie !')
     
     let rental = new Rental({
