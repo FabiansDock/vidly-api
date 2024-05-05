@@ -1,9 +1,9 @@
 const request = require('supertest');
 const mongoose = require('mongoose');
 const moment = require('moment');
-const { Rental } = require('../../models/rentals');
-const { User } = require('../../models/users');
-const { Movie } = require('../../models/movies');
+const { Rental } = require('../../../models/rentals');
+const { User } = require('../../../models/users');
+const { Movie } = require('../../../models/movies');
 
 describe('/api/returns', () => {
     let server;
@@ -24,7 +24,7 @@ describe('/api/returns', () => {
 
     beforeEach(async () => {
         token = new User().generateAuthToken();
-        server = require('../../index');
+        server = require('../../../index');
         payload = { customerId, movieId };
 
         rental = new Rental({

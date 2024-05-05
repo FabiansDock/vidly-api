@@ -1,5 +1,5 @@
 const request = require('supertest');
-const { Genre } = require('../../models/genres');
+const { Genre } = require('../../../models/genres');
 const mongoose = require('mongoose');
 const { User } = require('../models/users');
 
@@ -8,7 +8,7 @@ let server;
 
 describe('/api/genres', () => {
     beforeEach(async () => { 
-        server = require('../../index'); 
+        server = require('../../../index'); 
     });
     afterEach(async () => { 
         await Genre.remove({}); 
